@@ -32,7 +32,7 @@
       font-weight: bold;
       color: #003366;
     }
-    input, select {
+    input, select, textarea {
       padding: 10px;
       margin-top: 5px;
       border: 1px solid #ddd;
@@ -54,11 +54,14 @@
       display: flex;
       align-items: center;
     }
+    #otherTenancyTypeField {
+      display: none; /* Initially hidden */
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h3>Registration Form for Rental Appraisal</h3>
+    <h3>Registration Form for Letting Services</h3>
     <form action="https://formspree.io/f/xgvwbnpj" method="POST">
       <label for="name">Full Name</label>
       <input type="text" id="name" name="name" placeholder="Enter your full name" required>
@@ -77,13 +80,19 @@
       </select>
       
       <label for="tenancyType">What type of tenancy agreement do you have in place?</label>
-      <select id="tenancyType" name="tenancyType" required>
+      <select id="tenancyType" name="tenancyType" required onchange="showOtherField()">
         <option value="">Select an option</option>
         <option value="Airbnb">Airbnb</option>
         <option value="AST">Assured Shorthold Tenancy (AST)</option>
         <option value="Let to Council">Let to Council</option>
         <option value="Other">Other (please specify)</option>
       </select>
+
+      <!-- Text box for 'Other' tenancy type, hidden initially -->
+      <div id="otherTenancyTypeField">
+        <label for="otherTenancyType">Please specify the tenancy type</label>
+        <textarea id="otherTenancyType" name="otherTenancyType" placeholder="Specify your tenancy type"></textarea>
+      </div>
 
       <!-- GDPR checkbox -->
       <div class="gdpr">
@@ -94,5 +103,18 @@
       <input type="submit" value="Submit">
     </form>
   </div>
+
+  <script>
+    function showOtherField() {
+      var tenancyType = document.getElementById("tenancyType").value;
+      var otherField = document.getElementById("otherTenancyTypeField");
+
+      if (tenancyType === "Other") {
+        otherField.style.display = "block";
+      } else {
+        otherField.style.display = "none";
+      }
+    }
+  </script>
 </body>
 </html>
