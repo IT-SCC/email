@@ -57,8 +57,22 @@
 </head>
 <body>
   <div class="container">
-    <h3>Building Insurance Form</h3>
+    <h3>Letting Service Registration</h3>
     <form action="https://formspree.io/f/xzzplzjr" method="POST">
+
+      <!-- Full Name Field -->
+      <label for="fullName">Full Name</label>
+      <input type="text" id="fullName" name="fullName" placeholder="Enter your full name" required>
+
+      <!-- Flat Number Field -->
+      <label for="flatNumber">Flat Number</label>
+      <input type="text" id="flatNumber" name="flatNumber" placeholder="Enter your flat number" required>
+
+      <!-- Property Address Field -->
+      <label for="address">Property Address</label>
+      <textarea id="address" name="address" placeholder="Enter the property's full address" required></textarea>
+
+      <!-- Property Letting Status -->
       <label for="propertyLet">Have you let your property?</label>
       <select id="propertyLet" name="propertyLet" required>
         <option value="">Select an option</option>
@@ -66,6 +80,7 @@
         <option value="No">No</option>
       </select>
 
+      <!-- Tenancy Type -->
       <label for="tenancyType">What type of tenancy agreement do you have in place?</label>
       <select id="tenancyType" name="tenancyType" required onchange="showOtherField()">
         <option value="">Select an option</option>
@@ -80,10 +95,6 @@
         <label for="otherTenancyType">Please specify the tenancy type</label>
         <textarea id="otherTenancyType" name="otherTenancyType" placeholder="Specify your tenancy type"></textarea>
       </div>
-
-      <!-- Address Field -->
-      <label for="address">Property Address</label>
-      <textarea id="address" name="address" placeholder="Enter the property's full address" required></textarea>
 
       <input type="submit" value="Submit">
     </form>
