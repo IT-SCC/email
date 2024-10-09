@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request for Quotation (RFQ) Form</title>
+    <style>
+       body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 60%;
+            margin: 50px auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            font-weight: bold;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .form-group .half-width {
+            width: 48%;
+            display: inline-block;
+        }
+        .form-group .right {
+            float: right;
+        }
+        .form-group textarea {
+            resize: vertical;
+        }
+        .upload-logo {
+            margin-top: 10px;
+        }
+        .submit-btn {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .submit-btn button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        .submit-btn button:hover {
+            background-color: #218838;
+        }
+        .form-section {
+            margin-top: 30px;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://smtpjs.com/v3/smtp.js"></script>
+</head>
+<body>
+
+
+
+    
+        <div class="container">
+    <h2>Request for Quotation (RFQ)</h2>
+    <form id="rfq-form" method="post" enctype="multipart/form-data">
+
+        <div class="form-group">
+            <label for="company-name">Company Name</label>
+            <input type="text" id="company-name" name="company_name" required>
+        </div>
+
+        <div class="form-group">
+            <label for="nature-business">Nature of Business</label>
+            <input type="text" id="nature-business" name="nature_of_business" required>
+        </div>
+
+        <div class="form-group">
+            <label for="legal-entity">Type of Legal Entity</label>
+            <input type="text" id="legal-entity" name="legal_entity" required>
+        </div>
+
+        <div class="form-group">
+            <label for="phone">Telephone Number (with country code)</label>
+            <input type="tel" id="phone" name="phone" required>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+
+        <div class="form-group">
+            <label for="established">Established (No. of Years)</label>
+            <input type="number" id="established" name="established_years" required>
+        </div>
+
+        <div class="form-section">
+            <h3>Address Details</h3>
+
+            <div class="form-group half-width">
+                <label for="invoice-address">Invoice Address</label>
+                <textarea id="invoice-address" name="invoice_address" rows="3" required></textarea>
+            </div>
+
+            <div class="form-group half-width right">
+                <label for="registered-address">Registered Office Address</label>
+                <textarea id="registered-address" name="registered_address" rows="3" required></textarea>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="contact-name">Contact Name</label>
+            <input type="text" id="contact-name" name="contact_name" required>
+        </div>
+
+        <div class="form-group">
+            <label for="company-registration">Company Registration Number</label>
+            <input type="text" id="company-registration" name="company_registration_number" required>
+        </div>
+
+        <div class="form-group">
+            <label for="vat-registration">VAT Registration Number</label>
+            <input type="text" id="vat-registration" name="vat_registration_number" required>
+        </div>
+
+        <div class="form-group">
+            <label for="sole-trader">Sole Trader/Partner 1/Director 1</label>
+            <input type="text" id="sole-trader" name="sole_trader" required>
+        </div>
+
+        <div class="form-group">
+            <label for="partner2-director2">Partner 2/Director 2</label>
+            <input type="text" id="partner2-director2" name="partner2_director2" required>
+        </div>
+
+        <div class="form-group">
+            <label for="bank-reference">Bank Reference</label>
+            <input type="text" id="bank-reference" name="bank_reference" required>
+        </div>
+
+        <div class="form-group">
+            <label for="client-reference1">Client Reference 1</label>
+            <input type="text" id="client-reference1" name="client_reference1" required>
+        </div>
+
+        <div class="form-group">
+            <label for="client-reference2">Client Reference 2</label>
+            <input type="text" id="client-reference2" name="client_reference2" required>
+        </div>
+
+        <div class="form-group upload-logo">
+            <label for="company-logo">Upload Company Logo</label>
+            <input type="file" id="company-logo" name="company_logo" accept="image/*" required>
+        </div>
+
+        <div class="submit-btn">
+            <button type="button" onclick="generateAndDownloadPDF()">Save Data</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    async function generateAndDownloadPDF() {
+        // Get form data
+        const companyName = document.getElementById("company-name").value;
+        const natureBusiness = document.getElementById("nature-business").value;
+        const legalEntity = document.getElementById("legal-entity").value;
+        const phone = document.getElementById("phone").value;
+        const email = document.getElementById("email").value;
+        const established = document.getElementById("established").value;
+        const invoiceAddress = document.getElementById("invoice-address").value;
+        const registeredAddress = document.getElementById("registered-address").value;
+        const contactName = document.getElementById("contact-name").value;
+        const companyRegistration = document.getElementById("company-registration").value;
+        const vatRegistration = document.getElementById("vat-registration").value;
+        const soleTrader = document.getElementById("sole-trader").value;
+        const partner2Director2 = document.getElementById("partner2-director2").value;
+        const bankReference = document.getElementById("bank-reference").value;
+        const clientReference1 = document.getElementById("client-reference1").value;
+        const clientReference2 = document.getElementById("client-reference2").value;
+        const logoInput = document.getElementById("company-logo");
+
+        // Read the logo file
+        const logoFile = logoInput.files[0];
+        const logoBase64 = await readFileAsBase64(logoFile);
+
+        // Initialize jsPDF
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        // Add logo to the PDF
+        doc.addImage(logoBase64, 'PNG', 10, 5, 25, 25); // Position the logo at (10, 10)
+
+        // Title
+        doc.setFontSize(20);
+        doc.text("Request for Quotation (RFQ)", 70, 20);
+        doc.setFontSize(12);
+        doc.text("Date: " + new Date().toLocaleDateString(), 160, 20);
+
+        // Line break
+        doc.line(10, 30, 200, 30); // Horizontal line
+// Function to draw a box
+        function drawBox(label, value, x, y, width, height) {
+            doc.rect(x, y, width, height);  // Draw the box
+            doc.setFontSize(8); // Smaller font size inside the box
+            doc.text(label, x + 2, y + 5);  // Add label text
+            doc.text(value, x + 2, y + 12); // Add value text
+        }
+
+        // Grid settings to fit everything on one page
+        const boxWidth = 95;  // Wider boxes for 2x2 layout
+        const boxHeight = 20; // Smaller height to fit more rows
+        let startX = 10;
+        let startY = 40;
+
+        // First row of boxes
+        drawBox("Company Name", companyName, startX, startY, boxWidth, boxHeight);
+        drawBox("Nature of Business", natureBusiness, startX + boxWidth + 5, startY, boxWidth, boxHeight);
+
+        // Move to the second row
+        startY += boxHeight + 5;
+        drawBox("Type of Legal Entity", legalEntity, startX, startY, boxWidth, boxHeight);
+        drawBox("Telephone Number", phone, startX + boxWidth + 5, startY, boxWidth, boxHeight);
+
+        // Move to the third row
+        startY += boxHeight + 5;
+        drawBox("Email Address", email, startX, startY, boxWidth, boxHeight);
+        drawBox("Established (No. of Years)", established, startX + boxWidth + 5, startY, boxWidth, boxHeight);
+
+        // Move to the fourth row
+        startY += boxHeight + 5;
+        drawBox("Invoice Address", invoiceAddress, startX, startY, boxWidth, boxHeight);
+        drawBox("Registered Office Address", registeredAddress, startX + boxWidth + 5, startY, boxWidth, boxHeight);
+
+        // Fifth row for Contact and Registration info
+        startY += boxHeight + 5;
+        drawBox("Contact Name", contactName, startX, startY, boxWidth, boxHeight);
+        drawBox("Company Registration Number", companyRegistration, startX + boxWidth + 5, startY, boxWidth, boxHeight);
+
+        // Sixth row for VAT and Directors
+        startY += boxHeight + 5;
+        drawBox("VAT Registration Number", vatRegistration, startX, startY, boxWidth, boxHeight);
+        drawBox("Sole Trader/Partner 1/Director 1", soleTrader, startX + boxWidth + 5, startY, boxWidth, boxHeight);
+
+        // Seventh row for second Director and Bank info
+        startY += boxHeight + 5;
+        drawBox("Partner 2/Director 2", partner2Director2, startX, startY, boxWidth, boxHeight);
+        drawBox("Bank Reference", bankReference, startX + boxWidth + 5, startY, boxWidth, boxHeight);
+
+        // Eighth row for Client References
+        startY += boxHeight + 5;
+        drawBox("Client Reference 1", clientReference1, startX, startY, boxWidth, boxHeight);
+        drawBox("Client Reference 2", clientReference2, startX + boxWidth + 5, startY, boxWidth, boxHeight);
+
+        // Download the PDF
+        doc.save("RFQ.pdf");
+    }
+
+    function readFileAsBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                resolve(reader.result); // Return full base64 result
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+</script>
+
+</body>
+</html>
