@@ -1,156 +1,88 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Responsive Multi-Step Form</title>
+    <title>Property Inquiry Form</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 400px;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        h2 {
-            text-align: center;
-        }
-
-        .form-step {
-            display: none;
-        }
-
-        .form-step.active {
-            display: block;
-        }
-
-        input, button {
-            width: 100%;
-            padding: 10px;
-            margin: 8px 0;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        button {
-            background: #28a745;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background: #218838;
-        }
-
-        .error {
-            color: red;
-            font-size: 12px;
-        }
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        .container { max-width: 400px; margin: auto; }
+        .field { display: none; }
+        input, button { width: 100%; padding: 10px; margin: 10px 0; }
+        button { background: #007bff; color: white; border: none; cursor: pointer; }
+        button:hover { background: #0056b3; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Property Inquiry Form</h2>
-    
+    <h2>Property Inquiry</h2>
     <form id="multiStepForm">
-        <!-- Step 1 -->
-        <div class="form-step active">
-            <label for="name">Your Name</label>
-            <input type="text" id="name" required>
-            <button type="button" onclick="nextStep()">Next</button>
+        <div class="field" id="step1">
+            <input type="text" id="name" placeholder="Your Name" required>
+            <button type="button" onclick="nextStep(1)">Next</button>
         </div>
-
-        <!-- Step 2 -->
-        <div class="form-step">
-            <label for="email">Your Email</label>
-            <input type="email" id="email" required>
-            <button type="button" onclick="nextStep()">Next</button>
+        <div class="field" id="step2">
+            <input type="email" id="email" placeholder="Your Email" required>
+            <button type="button" onclick="nextStep(2)">Next</button>
         </div>
-
-        <!-- Step 3 -->
-        <div class="form-step">
-            <label for="phone">Your Phone</label>
-            <input type="text" id="phone" required>
-            <button type="button" onclick="nextStep()">Next</button>
+        <div class="field" id="step3">
+            <input type="text" id="phone" placeholder="Your Phone" required>
+            <button type="button" onclick="nextStep(3)">Next</button>
         </div>
-
-        <!-- Step 4 -->
-        <div class="form-step">
-            <label for="property_id">Property ID</label>
-            <input type="text" id="property_id" required>
-            <button type="button" onclick="nextStep()">Next</button>
+        <div class="field" id="step4">
+            <input type="text" id="property_id" placeholder="Property ID" required>
+            <button type="button" onclick="nextStep(4)">Next</button>
         </div>
-
-        <!-- Step 5 -->
-        <div class="form-step">
-            <label for="file">Upload Document (PDF, JPG, PNG)</label>
-            <input type="file" id="file" accept=".jpg, .png, .pdf">
-            <button type="submit">Submit</button>
+        <div class="field" id="step5">
+            <input type="file" id="file">
+            <button type="button" onclick="submitForm()">Submit</button>
         </div>
     </form>
-
     <p id="statusMessage"></p>
 </div>
 
 <script>
-    let currentStep = 0;
-    const steps = document.querySelectorAll(".form-step");
+let currentStep = 1;
+document.getElementById("step1").style.display = "block";
 
-    function nextStep() {
-        steps[currentStep].classList.remove("active");
-        currentStep++;
-        steps[currentStep].classList.add("active");
-    }
+function nextStep(step) {
+    document.getElementById("step" + step).style.display = "none";
+    document.getElementById("step" + (step + 1)).style.display = "block";
+}
 
-    document.getElementById("multiStepForm").addEventListener("submit", function(e) {
-        e.preventDefault();
+function submitForm() {
+    let formData = new FormData();
+    formData.append("name", document.getElementById("name").value);
+    formData.append("email", document.getElementById("email").value);
+    formData.append("phone", document.getElementById("phone").value);
+    formData.append("property_id", document.getElementById("property_id").value);
 
-        let formData = new FormData();
-        formData.append("name", document.getElementById("name").value);
-        formData.append("email", document.getElementById("email").value);
-        formData.append("phone", document.getElementById("phone").value);
-        formData.append("property_id", document.getElementById("property_id").value);
-
-        let file = document.getElementById("file").files[0];
-        if (file) {
-            let reader = new FileReader();
-            reader.onloadend = function() {
-                formData.append("file", reader.result.split(',')[1]);
-                formData.append("fileName", file.name);
-                formData.append("fileType", file.type);
-                sendData(formData);
-            };
-            reader.readAsDataURL(file);
-        } else {
+    let fileInput = document.getElementById("file");
+    if (fileInput.files.length > 0) {
+        let file = fileInput.files[0];
+        let reader = new FileReader();
+        reader.onloadend = function() {
+            formData.append("file", reader.result.split(',')[1]);
+            formData.append("fileName", file.name);
+            formData.append("fileType", file.type);
             sendData(formData);
-        }
-    });
-
-    function sendData(formData) {
-        fetch("https://script.google.com/macros/s/AKfycbz9iQ5jJaZoKEYgrgPrXehMRXPaeGNNWt-LYYHfmx-hw-FpUR_1JSdLdqdG3Hj93W5n/exec", {
-            method: "POST",
-            body: JSON.stringify(Object.fromEntries(formData))
-        })
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById("statusMessage").textContent = data.message;
-        })
-        .catch(error => console.error("Error:", error));
+        };
+        reader.readAsDataURL(file);
+    } else {
+        sendData(formData);
     }
+}
+
+function sendData(formData) {
+    fetch("https://script.google.com/a/macros/surveyingcorp.com/s/AKfycbzy5s6r2QoPDZumgUTjNN1aorRrIjv8r-Mxv6cryE8/dev", { // Change this to your Web App URL
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById("statusMessage").textContent = data.message;
+    })
+    .catch(error => console.error("Error:", error));
+}
 </script>
 
 </body>
