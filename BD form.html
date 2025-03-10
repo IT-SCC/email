@@ -3,120 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Step-by-Step Form</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Responsive Multi-Step Form</title>
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #f4f4f4;
+            margin: 0;
         }
-        .form-container {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+        .container {
             width: 100%;
             max-width: 400px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
             text-align: center;
         }
+
         .form-step {
             display: none;
         }
+
         .form-step.active {
             display: block;
         }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            font-weight: bold;
-            display: block;
-        }
-        input {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        button {
+
+        input, button {
             width: 100%;
             padding: 10px;
-            background: #007BFF;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background: #28a745;
             color: white;
             border: none;
-            border-radius: 5px;
             cursor: pointer;
-            margin-top: 10px;
         }
+
         button:hover {
-            background: #0056b3;
+            background: #218838;
+        }
+
+        .error {
+            color: red;
+            font-size: 12px;
         }
     </style>
 </head>
 <body>
-    <div class="form-container">
-        <h2>Surveying Corp BD Form</h2>
-        <form id="multiStepForm" action="upload.php" method="post" enctype="multipart/form-data">
-            <div class="form-step active">
-                <label for="name">Full Name:</label>
-                <input type="text" id="name" name="name" required>
-                <button type="button" onclick="nextStep()">Next</button>
-            </div>
-            <div class="form-step">
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required>
-                <button type="button" onclick="prevStep()">Back</button>
-                <button type="button" onclick="nextStep()">Next</button>
-            </div>
-            <div class="form-step">
-                <label for="phone">Phone Number:</label>
-                <input type="tel" id="phone" name="phone" required>
-                <button type="button" onclick="prevStep()">Back</button>
-                <button type="button" onclick="nextStep()">Next</button>
-            </div>
-            <div class="form-step">
-                <label for="property_id">Property ID:</label>
-                <input type="text" id="property_id" name="property_id" required>
-                <button type="button" onclick="prevStep()">Back</button>
-                <button type="button" onclick="nextStep()">Next</button>
-            </div>
-            <div class="form-step">
-                <label for="file">Attach Documents:</label>
-                <input type="file" id="file" name="file" accept=".pdf,.jpg,.png" required>
-                <button type="button" onclick="prevStep()">Back</button>
-                <button type="submit">Submit</button>
-            </div>
-        </form>
-    </div>
 
-    <script>
-        let currentStep = 0;
-        const steps = document.querySelectorAll(".form-step");
-        
-        function showStep(step) {
-            steps.forEach((stepDiv, index) => {
-                stepDiv.classList.toggle("active", index === step);
-            });
+<div class="container">
+    <h2>Property Inquiry Form</h2>
+    
+    <form id="multiStepForm">
+        <!-- Step 1 -->
+        <div class="form-step active">
+            <label for="name">Your Name</label>
+            <input type="text" id="name" required>
+            <button type="button" onclick="nextStep()">Next</button>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="form-step">
+            <label for="email">Your Email</label>
+            <input type="email" id="email" required>
+            <button type="button" onclick="nextStep()">Next</button>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="form-step">
+            <label for="phone">Your Phone</label>
+            <input type="text" id="phone" required>
+            <button type="button" onclick="nextStep()">Next</button>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="form-step">
+            <label for="property_id">Property ID</label>
+            <input type="text" id="property_id" required>
+            <button type="button" onclick="nextStep()">Next</button>
+        </div>
+
+        <!-- Step 5 -->
+        <div class="form-step">
+            <label for="file">Upload Document (PDF, JPG, PNG)</label>
+            <input type="file" id="file" accept=".jpg, .png, .pdf">
+            <button type="submit">Submit</button>
+        </div>
+    </form>
+
+    <p id="statusMessage"></p>
+</div>
+
+<script>
+    let currentStep = 0;
+    const steps = document.querySelectorAll(".form-step");
+
+    function nextStep() {
+        steps[currentStep].classList.remove("active");
+        currentStep++;
+        steps[currentStep].classList.add("active");
+    }
+
+    document.getElementById("multiStepForm").addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        let formData = new FormData();
+        formData.append("name", document.getElementById("name").value);
+        formData.append("email", document.getElementById("email").value);
+        formData.append("phone", document.getElementById("phone").value);
+        formData.append("property_id", document.getElementById("property_id").value);
+
+        let file = document.getElementById("file").files[0];
+        if (file) {
+            let reader = new FileReader();
+            reader.onloadend = function() {
+                formData.append("file", reader.result.split(',')[1]);
+                formData.append("fileName", file.name);
+                formData.append("fileType", file.type);
+                sendData(formData);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            sendData(formData);
         }
-        
-        function nextStep() {
-            if (currentStep < steps.length - 1) {
-                currentStep++;
-                showStep(currentStep);
-            }
-        }
-        
-        function prevStep() {
-            if (currentStep > 0) {
-                currentStep--;
-                showStep(currentStep);
-            }
-        }
-    </script>
+    });
+
+    function sendData(formData) {
+        fetch("https://script.google.com/macros/s/AKfycbz9iQ5jJaZoKEYgrgPrXehMRXPaeGNNWt-LYYHfmx-hw-FpUR_1JSdLdqdG3Hj93W5n/exec", {
+            method: "POST",
+            body: JSON.stringify(Object.fromEntries(formData))
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("statusMessage").textContent = data.message;
+        })
+        .catch(error => console.error("Error:", error));
+    }
+</script>
+
 </body>
 </html>
